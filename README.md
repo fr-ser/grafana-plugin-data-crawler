@@ -1,6 +1,7 @@
 # Grafana Plugin Loader
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![CI](https://github.com/fr-ser/grafana-plugin-loader/actions/workflows/ci_cd.yml/badge.svg?branch=main)](https://github.com/fr-ser/grafana-plugin-loader/actions/workflows/ci_cd.yml)
 
 This repo is meant to house a small hobby script that downloads information about a grafana
 plugin daily and stores it in a SQLite database.
