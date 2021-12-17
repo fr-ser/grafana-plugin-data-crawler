@@ -1,9 +1,8 @@
 # Grafana Plugin Loader
 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![CI](https://github.com/fr-ser/grafana-plugin-loader/actions/workflows/ci_cd.yml/badge.svg?branch=main)](https://github.com/fr-ser/grafana-plugin-loader/actions/workflows/ci_cd.yml)
+[![CI](https://github.com/fr-ser/grafana-plugin-data-crawler/actions/workflows/ci_cd.yml/badge.svg)](https://github.com/fr-ser/grafana-plugin-data-crawler/actions/workflows/ci_cd.yml)
 
-This repo is meant to house a small hobby script that downloads information about a grafana
+This repo is meant to house a small hobby script that downloads information about a Grafana
 plugin daily and stores it in a SQLite database.
 This data can then be charted later in Grafana (with the SQLite plugin)
 
@@ -14,9 +13,7 @@ This data can then be charted later in Grafana (with the SQLite plugin)
 ### Requirements
 
 - make
-- python 3.7 (the target raspberry runs Python 3.7.3)
-- pip packages
-  - pipenv
+- go 1.17
 
 ### Setup
 
@@ -32,6 +29,7 @@ The command `make run` should run the script and add an entry to the database.
 
 ### Release
 
-1. Clone or update this repo in the target environment.
-2. In case this is the initial installation some further steps (like adding the script to the
-  crontab) should be done via `make install-configure`.
+1. Run `make build`
+2. Copy the executable over to the target folder/device.
+3. In case this is the initial installation some further steps (like adding the script to the
+   crontab) should be done via make install-configure.

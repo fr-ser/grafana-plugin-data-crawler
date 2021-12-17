@@ -1,8 +1,6 @@
-# python stuff
-__pycache__/
-*.py[cod]
-*$py.class
-
 # app stuff
 app.log
 plugin.db
+
+# deployment artifacts
+build
