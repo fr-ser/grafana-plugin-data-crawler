@@ -1,4 +1,8 @@
-# Byte-compiled / optimized / DLL files
+# python stuff
 __pycache__/
 *.py[cod]
 *$py.class
+
+# app stuff
+app.log
+plugin.db

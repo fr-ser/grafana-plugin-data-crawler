@@ -32,6 +32,6 @@ The command `make run` should run the script and add an entry to the database.
 
 ### Release
 
-Run `make install-production` to install dependencies.
-In case this is the initial installation some further steps (like adding the script to the crontab)
-should be done via `make install-configure`.
+1. Clone or update this repo in the target environment.
+2. In case this is the initial installation some further steps (like adding the script to the
+  crontab) should be done via `make install-configure`.

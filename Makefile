@@ -1,3 +1,6 @@
+include .env
+export $(shell sed 's/=.*//' .env)
+
 install-dev:
 	pipenv install --dev
 
@@ -12,10 +15,13 @@ test-linting:
 test: test-linting test-unit
 
 run:
+	pipenv run python main.py
+
+configure-cron:
 	echo "not implemented" && exit 1
 
-install-production:
-	echo "not implemented" && exit 1
+create-db:
+	sqlite3 ${DB_LOCATION} \
+		'CREATE TABLE frser_sqlite (timestamp INTEGER, version TEXT, downloads INTEGER)'
 
-install-configure:
-	echo "not implemented" && exit 1
+install-configure: configure-cron create-db
