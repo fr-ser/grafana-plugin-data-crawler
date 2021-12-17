@@ -18,7 +18,7 @@ run:
 	pipenv run python main.py
 
 configure-cron:
-	echo "not implemented" && exit 1
+	(crontab -l ; echo "0 8 * * * cd $${PWD} && python3 main.py") | sort - | uniq - | crontab -
 
 create-db:
 	sqlite3 ${DB_LOCATION} \
