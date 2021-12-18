@@ -66,9 +66,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "queryText": "SELECT (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day, version, max(downloads) from frser_sqlite\nWHERE timestamp > $__from / 1000 and timestamp <= $__to / 1000\nGROUP BY day, version\nORDER BY day ASC, version DESC;",
+          "queryText": "SELECT (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day, version, avg(downloads) from frser_sqlite\nWHERE timestamp > $__from / 1000 and timestamp <= $__to / 1000\nGROUP BY day, version\nORDER BY day ASC, version DESC;",
           "queryType": "time series",
-          "rawQueryText": "SELECT (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day, version, max(downloads) from frser_sqlite\nWHERE timestamp > $__from / 1000 and timestamp <= $__to / 1000\nGROUP BY day, version\nORDER BY day ASC, version DESC;",
+          "rawQueryText": "SELECT (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day, version, avg(downloads) from frser_sqlite\nWHERE timestamp > $__from / 1000 and timestamp <= $__to / 1000\nGROUP BY day, version\nORDER BY day ASC, version DESC;",
           "refId": "A",
           "timeColumns": ["day"]
         }
@@ -162,9 +162,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "queryText": "WITH daily_data AS (\n    SELECT (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day, version, max(downloads) as downloads from frser_sqlite\nWHERE timestamp > $__from / 1000 and timestamp <= $__to / 1000\n    GROUP BY day, version\n)\nSELECT day, version, downloads - lag(downloads) over (PARTITION BY version ORDER BY day) as daily_downloads\nfrom daily_data\nORDER BY day ASC, version desc;",
+          "queryText": "WITH daily_data AS (\n    SELECT (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day, version, avg(downloads) as downloads \n    FROM frser_sqlite\n    WHERE timestamp > $__from / 1000 and timestamp <= $__to / 1000\n    GROUP BY day, version\n)\nSELECT day, version, downloads - lag(downloads) over (PARTITION BY version ORDER BY day) as daily_downloads\nfrom daily_data\nORDER BY day ASC, version desc;",
           "queryType": "time series",
-          "rawQueryText": "WITH daily_data AS (\n    SELECT (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day, version, max(downloads) as downloads from frser_sqlite\nWHERE timestamp > $__from / 1000 and timestamp <= $__to / 1000\n    GROUP BY day, version\n)\nSELECT day, version, downloads - lag(downloads) over (PARTITION BY version ORDER BY day) as daily_downloads\nfrom daily_data\nORDER BY day ASC, version desc;",
+          "rawQueryText": "WITH daily_data AS (\n    SELECT (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day, version, avg(downloads) as downloads \n    FROM frser_sqlite\n    WHERE timestamp > $__from / 1000 and timestamp <= $__to / 1000\n    GROUP BY day, version\n)\nSELECT day, version, downloads - lag(downloads) over (PARTITION BY version ORDER BY day) as daily_downloads\nfrom daily_data\nORDER BY day ASC, version desc;",
           "refId": "A",
           "timeColumns": ["day"]
         }
@@ -173,7 +173,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Download Count Cumulative",
+      "title": "Download Count Daily",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -338,16 +338,16 @@
       "pluginVersion": "7.5.5",
       "targets": [
         {
-          "queryText": "WITH numbered_versions AS (\nSELECT timestamp, version, downloads\n, ROW_NUMBER() OVER (PARTITION BY version ORDER BY timestamp DESC) AS number\n, downloads - lead(downloads) over (PARTITION BY version ORDER BY timestamp DESC) as daily_downloads\nfrom frser_sqlite\n)\nselect timestamp, version, downloads, daily_downloads\nfrom numbered_versions\nwhere number =1\norder by downloads desc",
+          "queryText": "WITH ranked_daily_data AS (\n    SELECT\n        (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day\n        , version\n        , avg(downloads) as downloads\n        , downloads - lead(downloads) over (PARTITION BY version ORDER BY timestamp DESC) as daily_downloads\n       , ROW_NUMBER() OVER (PARTITION BY version ORDER BY timestamp DESC) AS number\n    FROM frser_sqlite\n    WHERE timestamp > $__from / 1000\n    GROUP BY 1, version\n)\nSELECT day, version, downloads, daily_downloads\nFROM ranked_daily_data\nWHERE number =1\nORDER BY downloads DESC",
           "queryType": "table",
-          "rawQueryText": "WITH numbered_versions AS (\nSELECT timestamp, version, downloads\n, ROW_NUMBER() OVER (PARTITION BY version ORDER BY timestamp DESC) AS number\n, downloads - lead(downloads) over (PARTITION BY version ORDER BY timestamp DESC) as daily_downloads\nfrom frser_sqlite\n)\nselect timestamp, version, downloads, daily_downloads\nfrom numbered_versions\nwhere number =1\norder by downloads desc",
+          "rawQueryText": "WITH ranked_daily_data AS (\n    SELECT\n        (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day\n        , version\n        , avg(downloads) as downloads\n        , downloads - lead(downloads) over (PARTITION BY version ORDER BY timestamp DESC) as daily_downloads\n       , ROW_NUMBER() OVER (PARTITION BY version ORDER BY timestamp DESC) AS number\n    FROM frser_sqlite\n    WHERE timestamp > $__from / 1000\n    GROUP BY 1, version\n)\nSELECT day, version, downloads, daily_downloads\nFROM ranked_daily_data\nWHERE number =1\nORDER BY downloads DESC",
           "refId": "A",
-          "timeColumns": ["timestamp"]
+          "timeColumns": ["day"]
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Latest Download Count",
+      "title": "Latest Download Count Per Version",
       "transformations": [],
       "type": "table"
     }
@@ -367,5 +367,5 @@
   "timezone": "",
   "title": "Plugin Downloads",
   "uid": "z5l7f4WRk",
-  "version": 4
+  "version": 6
 }
