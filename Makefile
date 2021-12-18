@@ -26,8 +26,13 @@ create-db:
 
 install-configure: configure-cron create-db
 
-.PHONY: build
-build:
-	rm -rf build
+build-local:
+	@rm -f build/grafana-plugin-data-crawler
 	go build -o build/grafana-plugin-data-crawler
+
+build-raspberrypi-zero:
+	@rm -f build/grafana-plugin-data-crawler_linux_arm5
 	GOOS=linux GOARCH=arm GOARM=5 go build -o build/grafana-plugin-data-crawler_linux_arm5
+
+.PHONY: build
+build: build-local build-raspberrypi-zero
