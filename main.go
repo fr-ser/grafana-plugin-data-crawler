@@ -29,7 +29,9 @@ type logWriter struct {
 	io.Writer
 }
 
+// Write appends to the log file and to the stderr
 func (w logWriter) Write(b []byte) (n int, err error) {
+	fmt.Fprint(os.Stderr, string(append([]byte(time.Now().Format("2006-01-02T15:04:05.999Z")), b...)))
 	return w.Writer.Write(append([]byte(time.Now().Format("2006-01-02T15:04:05.999Z")), b...))
 }
 
