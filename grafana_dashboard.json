@@ -25,7 +25,9 @@
       "dashes": false,
       "datasource": "PluginDB",
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "displayName": "${__field.labels.version}\t"
+        },
         "overrides": []
       },
       "fill": 1,
@@ -51,22 +53,22 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "alertThreshold": true
+        "alertThreshold": false
       },
       "percentage": false,
       "pluginVersion": "7.5.5",
       "pointradius": 2,
-      "points": false,
+      "points": true,
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
-      "stack": false,
+      "stack": true,
       "steppedLine": false,
       "targets": [
         {
-          "queryText": "SELECT (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day, version, max(downloads) from frser_sqlite\nGROUP BY day, version\nORDER BY 1 ASC;",
+          "queryText": "SELECT (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day, version, max(downloads) from frser_sqlite\nWHERE timestamp > $__from / 1000 and timestamp <= $__to / 1000\nGROUP BY day, version\nORDER BY day ASC, version DESC;",
           "queryType": "time series",
-          "rawQueryText": "SELECT (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day, version, max(downloads) from frser_sqlite\nGROUP BY day, version\nORDER BY 1 ASC;",
+          "rawQueryText": "SELECT (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day, version, max(downloads) from frser_sqlite\nWHERE timestamp > $__from / 1000 and timestamp <= $__to / 1000\nGROUP BY day, version\nORDER BY day ASC, version DESC;",
           "refId": "A",
           "timeColumns": ["day"]
         }
@@ -75,7 +77,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Download Count",
+      "title": "Download Count Cumulative",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -111,6 +113,243 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "PluginDB",
+      "fieldConfig": {
+        "defaults": {
+          "displayName": "${__field.labels.version}\t"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
+      "hiddenSeries": false,
+      "id": 5,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.5",
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "queryText": "WITH daily_data AS (\n    SELECT (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day, version, max(downloads) as downloads from frser_sqlite\nWHERE timestamp > $__from / 1000 and timestamp <= $__to / 1000\n    GROUP BY day, version\n)\nSELECT day, version, downloads - lag(downloads) over (PARTITION BY version ORDER BY day) as daily_downloads\nfrom daily_data\nORDER BY day ASC, version desc;",
+          "queryType": "time series",
+          "rawQueryText": "WITH daily_data AS (\n    SELECT (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day, version, max(downloads) as downloads from frser_sqlite\nWHERE timestamp > $__from / 1000 and timestamp <= $__to / 1000\n    GROUP BY day, version\n)\nSELECT day, version, downloads - lag(downloads) over (PARTITION BY version ORDER BY day) as daily_downloads\nfrom daily_data\nORDER BY day ASC, version desc;",
+          "refId": "A",
+          "timeColumns": ["day"]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Download Count Cumulative",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "datasource": "-- Dashboard --",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": null,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "version"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "from": "",
+                    "id": 1,
+                    "text": "All Versions",
+                    "to": "",
+                    "type": 1,
+                    "value": "0"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 4,
+      "options": {
+        "showHeader": true
+      },
+      "pluginVersion": "7.5.5",
+      "targets": [
+        {
+          "panelId": 3,
+          "queryText": "\n    SELECT CAST(strftime('%s', 'now', '-1 minute') as INTEGER) as time, 4 as value\n    WHERE time >= 1234 and time < 134567\n  ",
+          "queryType": "table",
+          "rawQueryText": "SELECT CAST(strftime('%s', 'now', '-1 minute') as INTEGER) as time, 4 as value \nWHERE time >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": ["time", "ts"]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Total Downloads",
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "includeTimeField": false,
+            "mode": "reduceFields",
+            "reducers": ["sum"]
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": "PluginDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": null,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 21
+      },
+      "id": 3,
+      "options": {
+        "showHeader": true
+      },
+      "pluginVersion": "7.5.5",
+      "targets": [
+        {
+          "queryText": "WITH numbered_versions AS (\nSELECT timestamp, version, downloads\n, ROW_NUMBER() OVER (PARTITION BY version ORDER BY timestamp DESC) AS number\n, downloads - lead(downloads) over (PARTITION BY version ORDER BY timestamp DESC) as daily_downloads\nfrom frser_sqlite\n)\nselect timestamp, version, downloads, daily_downloads\nfrom numbered_versions\nwhere number =1\norder by downloads desc",
+          "queryType": "table",
+          "rawQueryText": "WITH numbered_versions AS (\nSELECT timestamp, version, downloads\n, ROW_NUMBER() OVER (PARTITION BY version ORDER BY timestamp DESC) AS number\n, downloads - lead(downloads) over (PARTITION BY version ORDER BY timestamp DESC) as daily_downloads\nfrom frser_sqlite\n)\nselect timestamp, version, downloads, daily_downloads\nfrom numbered_versions\nwhere number =1\norder by downloads desc",
+          "refId": "A",
+          "timeColumns": ["timestamp"]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Latest Download Count",
+      "transformations": [],
+      "type": "table"
     }
   ],
   "refresh": false,
@@ -128,5 +367,5 @@
   "timezone": "",
   "title": "Plugin Downloads",
   "uid": "z5l7f4WRk",
-  "version": 2
+  "version": 4
 }
