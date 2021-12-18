@@ -18,7 +18,7 @@ run:
 	go run main.go
 
 configure-cron:
-	(crontab -l ; echo "0 8 * * * cd $${PWD}/build/grafana-plugin-data-crawler") | sort - | uniq - | crontab -
+	(crontab -l ; echo "0 8 * * * cd $${PWD} && ./build/grafana-plugin-data-crawler") | sort - | uniq - | crontab -
 
 create-db:
 	sqlite3 ${DB_LOCATION} \
