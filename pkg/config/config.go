@@ -8,8 +8,10 @@ import (
 
 type AppConfig struct {
 	DatabaseLocation string `env:"DB_LOCATION" envDefault:"./plugin.db"`
-	LogDestination   string `env:"LOG_DESTINATION" envDefault:"./app.log"`
-	LogMaxSizeBytes  int64  `env:"LOG_MAX_SIZE_BYTES" envDefault:"5000000"`
+
+	LogDestination  string `env:"LOG_DESTINATION" envDefault:"./app.log"`
+	LogMaxSizeBytes int64  `env:"LOG_MAX_SIZE_BYTES" envDefault:"5000000"`
+	LogLevel        string `env:"LOG_LEVEL" envDefault:"info"`
 }
 
 // LoadConfig reads the environment and returns a configuration

@@ -17,26 +17,25 @@ func main() {
 	}
 	appConfig.LogDestination = "./load_grafana.log"
 
-	logger, err := utils.GetLogger(appConfig.LogDestination, appConfig.LogMaxSizeBytes)
+	logger, err := utils.GetLogger(appConfig)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	logger.Println("app started")
+	defer logger.Sync()
+	logger.Info("app started")
 
 	pluginData, err := grafana.GetPluginData()
 	if err != nil {
-		logger.Printf("Error: %s\n", err)
-		os.Exit(1)
+		logger.Fatalf("Error: %s", err)
 	}
-	logger.Printf("downloaded data with %d items\n", len(pluginData.Items))
+	logger.Infof("downloaded data with %d items", len(pluginData.Items))
 
 	err = grafana.SaveToDB(pluginData, appConfig.DatabaseLocation)
 	if err != nil {
-		logger.Printf("Error: %s\n", err)
-		os.Exit(1)
+		logger.Fatalf("Error: %s", err)
 	}
-	logger.Println("inserted the data into the database")
+	logger.Info("inserted the data into the database")
 
-	logger.Println("app finished")
+	logger.Info("app finished")
 }

@@ -30,7 +30,11 @@ test: test-lint test-unit
 
 #: Run the command to load data from Grafana
 run-load-grafana:
-	go run ./pkg/commands/load_grafana.go
+	go run ./pkg/commands/load_grafana/load_grafana.go
+
+#: Run the command to load data from Github
+run-load-github:
+	go run ./pkg/commands/load_github/load_github.go
 
 #: Add the commands to the crontab
 configure-cron:
