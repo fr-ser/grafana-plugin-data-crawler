@@ -1,4 +1,5 @@
 # app stuff
+load_grafana.log
 app.log
 plugin.db
 

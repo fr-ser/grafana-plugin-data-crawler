@@ -2,13 +2,13 @@
 
 [![CI](https://github.com/fr-ser/grafana-plugin-data-crawler/actions/workflows/ci_cd.yml/badge.svg)](https://github.com/fr-ser/grafana-plugin-data-crawler/actions/workflows/ci_cd.yml)
 
-This repo is meant to house a small hobby script that downloads information about a Grafana
-plugin daily and stores it in a SQLite database.
+This repo is meant to house a small hobby script that downloads information about the frser-sqlite Grafana
+plugin and stores it in a SQLite database.
 This data can then be charted later in Grafana (with the SQLite plugin)
 
 ## Development
 
-`make` is used as a task runner. For the commands take a look at the `Makefile`.
+`make` is used as a task runner. Run `make help` to see the available commands or check the `Makefile`.
 
 ### Requirements
 
@@ -17,7 +17,7 @@ This data can then be charted later in Grafana (with the SQLite plugin)
 
 ### Setup
 
-Either the command `make install-dev` gets the dependencies or shows what is missing.
+Either the command `make install-dependencies` gets the dependencies or shows what is missing.
 
 ### Testing
 
@@ -25,7 +25,7 @@ Tests can be run with the command `make test`
 
 ### Running the script
 
-The command `make run` should run the script and add an entry to the database.
+Commands to run the scripts can be found in the Makefile.
 
 ### Release
 
