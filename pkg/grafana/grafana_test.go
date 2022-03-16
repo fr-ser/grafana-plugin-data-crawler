@@ -51,7 +51,7 @@ func TestSaveToDB(t *testing.T) {
 	db, _ := sql.Open("sqlite", databaseLocation)
 	defer db.Close()
 	_, _ = db.Exec(
-		"CREATE TABLE frser_sqlite (timestamp INTEGER, version TEXT, downloads INTEGER)",
+		"CREATE TABLE grafana (timestamp INTEGER, version TEXT, downloads INTEGER)",
 	)
 
 	testPlugindata := pluginDataStruct{Items: []pluginDataItem{{"1", 11}, {"2", 22}}}
@@ -64,7 +64,7 @@ func TestSaveToDB(t *testing.T) {
 	}
 
 	rows, _ := db.Query(
-		"SELECT timestamp, version, downloads INTEGER FROM frser_sqlite ORDER BY version ASC",
+		"SELECT timestamp, version, downloads INTEGER FROM grafana ORDER BY version ASC",
 	)
 	storedPluginData := pluginDataStruct{Items: []pluginDataItem{}}
 

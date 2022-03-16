@@ -7,8 +7,6 @@ import (
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-
-	"grafana-plugin-loader/pkg/config"
 )
 
 // maybeRotateFile checks the log file and rotates it if necessary
@@ -35,16 +33,19 @@ func maybeRotateFile(logDestination string, logMaxSizeBytes int64) error {
 }
 
 // GetLogger returns a fully set up logger
-func GetLogger(appConfig config.AppConfig) (logger *zap.SugaredLogger, err error) {
-	err = maybeRotateFile(appConfig.LogDestination, appConfig.LogMaxSizeBytes)
+func GetLogger(logDestination string, logMaxSizeBytes int64, logLevel string) (logger *zap.SugaredLogger, err error) {
+	err = maybeRotateFile(logDestination, logMaxSizeBytes)
 	if err != nil {
 		return nil, err
 	}
 
 	var logConfig = zap.NewProductionConfig()
 
-	logConfig.Level.UnmarshalText([]byte(appConfig.LogLevel))
-	logConfig.OutputPaths = []string{"stderr", appConfig.LogDestination}
+	err = logConfig.Level.UnmarshalText([]byte(logLevel))
+	if err != nil {
+		return nil, fmt.Errorf("error setting log level: %v", err)
+	}
+	logConfig.OutputPaths = []string{"stderr", logDestination}
 	logConfig.Encoding = "console"
 	logConfig.EncoderConfig.EncodeTime = zapcore.RFC3339TimeEncoder
 	logConfig.DisableStacktrace = true

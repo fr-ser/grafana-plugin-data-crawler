@@ -4,5 +4,8 @@ load_github.log
 app.log
 plugin.db
 
+# secrets for the app
+.github_token
+
 # deployment artifacts
 build

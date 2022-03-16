@@ -64,7 +64,7 @@ func SaveToDB(pluginData pluginDataStruct, databaseLocation string) (err error) 
 
 	for _, item := range pluginData.Items {
 		_, err = db.Exec(
-			"INSERT INTO frser_sqlite (timestamp, version, downloads) VALUES (?, ?, ?)",
+			"INSERT INTO grafana (timestamp, version, downloads) VALUES (?, ?, ?)",
 			time.Now().Unix(), item.Version, item.Downloads,
 		)
 		if err != nil {
