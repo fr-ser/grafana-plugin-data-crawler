@@ -13,7 +13,7 @@ func intPointer(x int) *int {
 	return &x
 }
 
-func TestGetAndStore(t *testing.T) {
+func TestGetAndStoreTrafficViews(t *testing.T) {
 	tmpDir := t.TempDir()
 	databaseLocation := tmpDir + "/plugin.db"
 
@@ -54,7 +54,7 @@ func TestGetAndStore(t *testing.T) {
 	}
 }
 
-func TestGetAndStoreUpdate(t *testing.T) {
+func TestGetAndStoreTrafficViewsUpdate(t *testing.T) {
 	tmpDir := t.TempDir()
 	databaseLocation := tmpDir + "/plugin.db"
 

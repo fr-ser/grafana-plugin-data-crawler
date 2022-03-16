@@ -115,6 +115,65 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "datasource": "PluginDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "${__field.labels.tag}\t",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
+      "id": 3,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "7.5.5",
+      "targets": [
+        {
+          "queryText": "SELECT created_at, tag, sum(downloads) as downloads from github_releases\nGROUP BY  tag\norder by created_at asc",
+          "queryType": "time series",
+          "rawQueryText": "SELECT created_at, tag, sum(downloads) as downloads from github_releases\nGROUP BY  tag\norder by created_at asc",
+          "refId": "A",
+          "timeColumns": [
+            "created_at"
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Release Download Count",
+      "transformations": [],
+      "type": "bargauge"
     }
   ],
   "refresh": false,
@@ -132,5 +191,5 @@
   "timezone": "",
   "title": "Github Data",
   "uid": "IgnyXcmgz",
-  "version": 2
+  "version": 3
 }

@@ -56,8 +56,6 @@ func main() {
 
 	client := github.NewClient(tc)
 
-	logger.Info("Github Client created")
-
 	pages, _, err := client.Repositories.ListTrafficViews(ctx, "fr-ser", "grafana-sqlite-datasource", nil)
 	if err != nil {
 		logger.Fatalf("error during traffic view retrieval: %v", err)
@@ -69,6 +67,26 @@ func main() {
 		logger.Fatalf("%v", err)
 	}
 	logger.Info("Traffic Views stored")
+
+	listOptions := &github.ListOptions{PerPage: 50}
+	for {
+		releases, resp, err := client.Repositories.ListReleases(ctx, "fr-ser", "grafana-sqlite-datasource", listOptions)
+		if err != nil {
+			logger.Fatalf("error during release retrieval: %v", err)
+		}
+		logger.Infof("Releases downloaded. Page %v", listOptions.Page)
+
+		err = github_crawler.StoreReleases(releases, appConfig.DatabaseLocation)
+		if err != nil {
+			logger.Fatalf("%v", err)
+		}
+		logger.Infof("Releases stored. Count %d", len(releases))
+
+		if resp.NextPage == 0 {
+			break
+		}
+		listOptions.Page = resp.NextPage
+	}
 
 	_ = logger.Sync()
 }
