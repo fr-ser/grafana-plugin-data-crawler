@@ -3,6 +3,7 @@ package github_crawler
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/google/go-github/v43/github"
 
@@ -21,9 +22,8 @@ func StoreReleases(releases []*github.RepositoryRelease, databaseLocation string
 	for _, release := range releases {
 		for _, asset := range release.Assets {
 			_, err = db.Exec(
-				`INSERT INTO github_releases (tag, asset_name, downloads, created_at) VALUES (?, ?, ?, ?)
-				ON CONFLICT(tag, asset_name) DO UPDATE SET downloads=excluded.downloads`,
-				release.TagName, asset.Name, asset.DownloadCount, release.CreatedAt.Unix(),
+				`INSERT INTO github_releases (timestamp, tag, asset_name, downloads) VALUES (?, ?, ?, ?)`,
+				time.Now().Unix(), release.TagName, asset.Name, asset.DownloadCount,
 			)
 			if err != nil {
 				return fmt.Errorf("error inserting row: %s", err)

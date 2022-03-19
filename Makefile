@@ -48,7 +48,7 @@ create-db:
 	sqlite3 ${DB_LOCATION} \
 		'CREATE TABLE github_traffic_views (timestamp INTEGER PRIMARY KEY, count INTEGER, uniques INTEGER)'
 	sqlite3 ${DB_LOCATION} \
-		'CREATE TABLE github_releases (tag TEXT, asset_name TEXT, downloads INTEGER, created_at INTEGER, UNIQUE (tag, asset_name))'
+		'CREATE TABLE github_releases (timestamp INTEGER, tag TEXT, asset_name TEXT, downloads INTEGER)'
 
 #: perform all initial steps to setup the tool on a new machine
 install-configure: configure-cron create-db

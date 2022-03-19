@@ -117,13 +117,115 @@
       }
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "PluginDB",
+      "fieldConfig": {
+        "defaults": {
+          "displayName": "${__field.labels.tag}\t"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
+      "hiddenSeries": false,
+      "id": 3,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.5",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "queryText": "WITH daily_data AS (\n    SELECT (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day, tag, asset_name, avg(downloads) as downloads \n    FROM github_releases\n    WHERE timestamp > $__from / 1000 --and timestamp <= $__to / 1000\n    AND asset_name LIKE '%zip'\n    GROUP BY day, tag, asset_name\n)\n, daily_data_by_release AS (\n    SELECT day, tag, sum(downloads) as downloads \n    FROM daily_data\n    GROUP BY day, tag\n)\nSELECT day, tag, downloads - lag(downloads) over (PARTITION BY tag ORDER BY day) as downloads\nfrom daily_data_by_release\nORDER BY day ASC, tag desc;",
+          "queryType": "time series",
+          "rawQueryText": "WITH daily_data AS (\n    SELECT (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day, tag, asset_name, avg(downloads) as downloads \n    FROM github_releases\n    WHERE timestamp > $__from / 1000 --and timestamp <= $__to / 1000\n    AND asset_name LIKE '%zip'\n    GROUP BY day, tag, asset_name\n)\n, daily_data_by_release AS (\n    SELECT day, tag, sum(downloads) as downloads \n    FROM daily_data\n    GROUP BY day, tag\n)\nSELECT day, tag, downloads - lag(downloads) over (PARTITION BY tag ORDER BY day) as downloads\nfrom daily_data_by_release\nORDER BY day ASC, tag desc;",
+          "refId": "A",
+          "timeColumns": [
+            "day"
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Daily Release Downloads",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transformations": [],
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "datasource": "PluginDB",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "displayName": "${__field.labels.tag}\t",
+          "custom": {
+            "align": null,
+            "filterable": false
+          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -131,6 +233,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           }
@@ -138,42 +244,27 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
+        "h": 19,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 18
       },
-      "id": 3,
+      "id": 5,
       "options": {
-        "displayMode": "gradient",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "text": {}
+        "showHeader": true
       },
       "pluginVersion": "7.5.5",
       "targets": [
         {
-          "queryText": "SELECT created_at, tag, sum(downloads) as downloads from github_releases\nGROUP BY  tag\norder by created_at asc",
-          "queryType": "time series",
-          "rawQueryText": "SELECT created_at, tag, sum(downloads) as downloads from github_releases\nGROUP BY  tag\norder by created_at asc",
+          "queryText": "WITH daily_data AS (\n    SELECT\n        (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day\n        , tag\n        , asset_name\n        , avg(downloads) as downloads\n    FROM github_releases\n    WHERE timestamp > $__from / 1000\n    AND asset_name LIKE '%zip'\n    GROUP BY 1, tag, asset_name\n)\n, daily_data_by_release AS (\n    SELECT day, tag, sum(downloads) as downloads\n    FROM daily_data\n    GROUP BY day, tag\n)\n,  ranked_daily_data AS (\n    SELECT\n        day\n        , tag\n        , sum(downloads) as downloads\n        , downloads - lead(downloads) over (PARTITION BY tag ORDER BY day DESC) as daily_downloads\n       , ROW_NUMBER() OVER (PARTITION BY tag ORDER BY day DESC) AS number\n    FROM daily_data_by_release\n    GROUP BY day, tag\n)\nSELECT tag, downloads, daily_downloads\nFROM ranked_daily_data\nWHERE number =1\nORDER BY tag DESC",
+          "queryType": "randomWalk",
+          "rawQueryText": "WITH daily_data AS (\n    SELECT\n        (CAST(timestamp AS INTEGER) / 86400) * 86400 AS day\n        , tag\n        , asset_name\n        , avg(downloads) as downloads\n    FROM github_releases\n    WHERE timestamp > $__from / 1000\n    AND asset_name LIKE '%zip'\n    GROUP BY 1, tag, asset_name\n)\n, daily_data_by_release AS (\n    SELECT day, tag, sum(downloads) as downloads\n    FROM daily_data\n    GROUP BY day, tag\n)\n,  ranked_daily_data AS (\n    SELECT\n        day\n        , tag\n        , sum(downloads) as downloads\n        , downloads - lead(downloads) over (PARTITION BY tag ORDER BY day DESC) as daily_downloads\n       , ROW_NUMBER() OVER (PARTITION BY tag ORDER BY day DESC) AS number\n    FROM daily_data_by_release\n    GROUP BY day, tag\n)\nSELECT tag, downloads, daily_downloads\nFROM ranked_daily_data\nWHERE number =1\nORDER BY tag DESC",
           "refId": "A",
-          "timeColumns": [
-            "created_at"
-          ]
+          "timeColumns": []
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Release Download Count",
-      "transformations": [],
-      "type": "bargauge"
+      "title": "Latest Release Downloads",
+      "type": "table"
     }
   ],
   "refresh": false,
@@ -191,5 +282,5 @@
   "timezone": "",
   "title": "Github Data",
   "uid": "IgnyXcmgz",
-  "version": 3
+  "version": 6
 }
