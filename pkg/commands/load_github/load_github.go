@@ -17,7 +17,7 @@ import (
 type AppConfig struct {
 	DatabaseLocation string `env:"DB_LOCATION" envDefault:"./plugin.db"`
 
-	LogDestination  string `env:"LOG_DESTINATION" envDefault:"./app.log"`
+	LogDestination  string `env:"LOG_DESTINATION" envDefault:"./load_github.log"`
 	LogMaxSizeBytes int64  `env:"LOG_MAX_SIZE_BYTES" envDefault:"5000000"`
 	LogLevel        string `env:"LOG_LEVEL" envDefault:"info"`
 
@@ -40,7 +40,6 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	appConfig.LogDestination = "./load_github.log"
 
 	logger, err := utils.GetLogger(appConfig.LogDestination, appConfig.LogMaxSizeBytes, appConfig.LogLevel)
 	if err != nil {

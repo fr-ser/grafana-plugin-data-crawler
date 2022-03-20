@@ -1,11 +1,10 @@
 # app stuff
-load_grafana.log
-load_github.log
-app.log
+*.log
 plugin.db
 
 # secrets for the app
 .github_token
+.dropbox_token
 
 # deployment artifacts
 build

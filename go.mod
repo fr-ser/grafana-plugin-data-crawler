@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/caarlos0/env/v6 v6.9.1
+	github.com/dropbox/dropbox-sdk-go-unofficial/v6 v6.0.4
 	github.com/golangci/golangci-lint v1.44.2
 	github.com/google/go-github/v43 v43.0.0
 	go.uber.org/zap v1.17.0
