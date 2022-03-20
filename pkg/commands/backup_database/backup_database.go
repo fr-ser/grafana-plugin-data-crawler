@@ -46,11 +46,14 @@ func main() {
 
 	err = backup.CheckDatabaseConsistency(appConfig.DatabaseLocation)
 	if err != nil {
-		logger.Fatalf("error during release retrieval: %v", err)
+		logger.Fatal(err)
 	}
 	logger.Info("database is valid")
 
-	backup.UploadDatabase(appConfig.DatabaseLocation, appConfig.DropboxToken)
+	err = backup.UploadDatabase(appConfig.DatabaseLocation, appConfig.DropboxToken)
+	if err != nil {
+		logger.Fatal(err)
+	}
 	logger.Info("database uploaded")
 
 	_ = logger.Sync()
